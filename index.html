@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>植物地圖</title>
+    <!-- 引入 Leaflet 地圖 library (已移除 integrity 屬性) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <!-- 引入我們的 CSS 檔案 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <header>
+                <h1>臺灣植物地圖</h1>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="搜尋植物名或地名...">
+                </div>
+                <div class="filter-container">
+                    <!-- 篩選條件可以動態生成或手動添加 -->
+                    <label>
+                        <input type="checkbox" class="plant-filter" value="水黃皮"> 水黃皮
+                    </label>
+                    <label>
+                        <input type="checkbox" class="plant-filter" value="茄苳"> 茄苳
+                    </label>
+                    <label>
+                        <input type="checkbox" class="plant-filter" value="其他"> 其他
+                    </label>
+                </div>
+            </header>
+            <main>
+                <div id="plant-list">
+                    <!-- 植物列表將由 JavaScript 動態生成 -->
+                </div>
+            </main>
+        </div>
+        <div id="map"></div>
+    </div>
+    <!-- 引入我們的 JavaScript 檔案 -->
+    <script src="map.js"></script>
+</body>
+</html>
