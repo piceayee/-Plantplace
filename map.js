@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 🚩 初始化地圖
     // 調整台灣中心點及縮放級別以包含所有離島
-    map = L.map("map").setView([23.5, 121], 8); 
+    // 關閉地圖動畫效果
+    map = L.map("map", { zoomAnimation: false, fadeAnimation: false }).setView([23.5, 121], 8); 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
@@ -38,6 +39,8 @@ async function loadPlantData() {
         
         if (!Array.isArray(allData) || allData.length === 0) {
             console.error('❌ JSON 檔案格式錯誤或為空。');
+            // 如果資料有問題，仍然渲染空清單，避免 TypeError
+            renderData([]);
             return;
         }
 
@@ -110,7 +113,7 @@ function createListItem(item) {
 
     // 點擊清單項目時，移動地圖並打開標記的彈出視窗
     listItem.addEventListener('click', () => {
-        map.flyTo([item.lat, item.lng], 15, { duration: 1.5 });
+        map.setView([item.lat, item.lng], 15); // 移除 flyTo 動畫
         // 找到對應的標記並打開彈出視窗
         const targetMarker = allMarkers.find(marker => 
             marker.data.lat === item.lat && marker.data.lng === item.lng
