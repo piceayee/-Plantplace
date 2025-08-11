@@ -26,14 +26,17 @@ body, html {
     height: 100vh;
 }
 
+/* 側邊欄樣式 */
 .sidebar {
     width: 350px;
+    min-width: 280px; /* 最小寬度 */
     background-color: var(--background-color);
     box-shadow: 2px 0 5px var(--shadow-color);
     display: flex;
     flex-direction: column;
     overflow: auto;
     padding: 20px;
+    transition: transform 0.3s ease-in-out;
 }
 
 h1 {
@@ -42,7 +45,7 @@ h1 {
     margin-bottom: 15px;
 }
 
-.search-container, .filter-container {
+.search-container {
     margin-bottom: 15px;
 }
 
@@ -51,13 +54,6 @@ h1 {
     padding: 8px;
     border: 1px solid var(--border-color);
     border-radius: 5px;
-}
-
-.filter-container label {
-    display: inline-block;
-    margin-right: 15px;
-    font-size: 0.9em;
-    color: var(--text-color);
 }
 
 #plant-list {
@@ -91,6 +87,7 @@ h1 {
     color: var(--text-color);
 }
 
+/* 地圖樣式 */
 #map {
     flex-grow: 1;
     height: 100%;
@@ -109,4 +106,37 @@ h1 {
     font-weight: bold;
     color: var(--primary-color);
     margin-bottom: 5px;
+}
+
+/* 響應式設計 */
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggle-button {
+    display: none; /* 預設隱藏按鈕 */
+    font-size: 1.5em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary-color);
+    padding: 5px;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: absolute;
+        z-index: 1000;
+        transform: translateX(-100%);
+    }
+
+    .sidebar.visible {
+        transform: translateX(0);
+    }
+    
+    .toggle-button {
+        display: block; /* 在小螢幕上顯示按鈕 */
+    }
 }
