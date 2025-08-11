@@ -9,13 +9,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const searchInput = document.getElementById("search-input");
     const sidebar = document.getElementById("sidebar");
     const toggleButton = document.getElementById("toggle-sidebar");
-    const toggleIcon = document.getElementById("toggle-icon");
     plantListElement = document.getElementById("plant-list");
 
     // 🚩 初始化地圖
-    // 調整台灣中心點及縮放級別以包含所有離島
-    // 關閉地圖動畫效果
-    map = L.map("map", { zoomAnimation: false, fadeAnimation: false }).setView([23.5, 121], 8); 
+    // 調整台灣中心點及縮放級別以包含所有離島，並恢復平滑縮放動畫
+    map = L.map("map").setView([23.5, 121], 8); 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
@@ -28,21 +26,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // 側邊欄切換功能
     toggleButton.addEventListener("click", () => {
-        if (sidebar.classList.contains("collapsed")) {
-            sidebar.classList.remove("collapsed");
-            sidebar.classList.add("expanded");
-            toggleIcon.textContent = "▼";
-        } else {
-            sidebar.classList.remove("expanded");
-            sidebar.classList.add("collapsed");
-            toggleIcon.textContent = "▶";
-        }
+        sidebar.classList.toggle("collapsed");
     });
-
-    // 在大螢幕上，確保側邊欄是展開的
-    if (window.innerWidth > 768) {
-        sidebar.classList.remove("collapsed");
-    }
 });
 
 /**
@@ -56,7 +41,6 @@ async function loadPlantData() {
         
         if (!Array.isArray(allData) || allData.length === 0) {
             console.error('❌ JSON 檔案格式錯誤或為空。');
-            // 如果資料有問題，仍然渲染空清單，避免 TypeError
             renderData([]);
             return;
         }
@@ -83,6 +67,10 @@ function renderData(data) {
 
     data.forEach(item => {
         if (item.lat && item.lng) {
+            // 檢查 name 屬性，如果不存在則印出整個物件以便除錯
+            if (!item.name) {
+                console.warn('⚠️ 點位名稱遺失。此筆資料為:', item);
+            }
             createMarker(item);
             createListItem(item);
         }
@@ -98,15 +86,10 @@ function createMarker(item) {
     const lng = parseFloat(item.lng);
     const marker = L.marker([lat, lng]).addTo(map);
 
-    // 檢查 name 屬性，如果不存在則顯示警告
-    if (!item.name) {
-        console.warn(`⚠️ 點位名稱遺失，GPS 座標 [${lat}, ${lng}]。請檢查您的 places_with_gps.json。`);
-    }
-
     // 綁定 Popup
     marker.bindPopup(`
         <div class="popup-content">
-            <h3 class="popup-title">${item.name || '未命名'}</h3>
+            <p class="popup-title">${item.name || '未名'}</p>
             <p><strong>植物名:</strong> ${item.plant || '無'}</p>
             <p><strong>地址:</strong> ${item.address || '無'}</p>
             <p><strong>GPS:</strong> ${lat.toFixed(5)}, ${lng.toFixed(5)}</p>
@@ -126,14 +109,9 @@ function createListItem(item) {
     const listItem = document.createElement('div');
     listItem.className = 'plant-item';
 
-    // 檢查 name 屬性，如果不存在則顯示警告
-    if (!item.name) {
-        console.warn(`⚠️ 清單名稱遺失，GPS 座標 [${item.lat}, ${item.lng}]。請檢查您的 places_with_gps.json。`);
-    }
-
     listItem.innerHTML = `
         <div class="plant-info">
-            <h3>${item.name || '未命名'}</h3>
+            <h3>${item.name || '未名'}</h3>
             <p>植物名: ${item.plant || '無'}</p>
             <p>地址: ${item.address || '無'}</p>
         </div>
@@ -141,7 +119,7 @@ function createListItem(item) {
 
     // 點擊清單項目時，移動地圖並打開標記的彈出視窗
     listItem.addEventListener('click', () => {
-        map.setView([item.lat, item.lng], 15); // 移除 flyTo 動畫
+        map.flyTo([item.lat, item.lng], 15, { duration: 1.5 }); // 恢復 flyTo 動畫
         // 找到對應的標記並打開彈出視窗
         const targetMarker = allMarkers.find(marker => 
             marker.data.lat === item.lat && marker.data.lng === item.lng
@@ -151,9 +129,10 @@ function createListItem(item) {
         }
         // 在手機上點擊清單項目後，自動收合側邊欄
         if (window.innerWidth <= 768) {
-            document.getElementById("sidebar").classList.remove("expanded");
-            document.getElementById("sidebar").classList.add("collapsed");
-            document.getElementById("toggle-icon").textContent = "▶";
+            const sidebar = document.getElementById("sidebar");
+            if (!sidebar.classList.contains("collapsed")) {
+                sidebar.classList.add("collapsed");
+            }
         }
     });
 
