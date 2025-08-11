@@ -35,7 +35,19 @@ body, html {
     display: flex;
     flex-direction: column;
     padding: 20px;
-    transition: transform 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+    overflow-y: auto;
+}
+
+.sidebar.collapsed {
+    width: 60px; /* 收合時的寬度 */
+    overflow: hidden;
+}
+
+.sidebar.collapsed h1,
+.sidebar.collapsed .search-container,
+.sidebar.collapsed main {
+    display: none;
 }
 
 h1 {
@@ -57,7 +69,6 @@ h1 {
 
 #plant-list {
     flex-grow: 1;
-    overflow-y: auto;
 }
 
 .plant-item {
@@ -107,7 +118,7 @@ h1 {
     margin-bottom: 5px;
 }
 
-/* 響應式設計 */
+/* 側邊欄切換按鈕樣式 */
 .header-content {
     display: flex;
     justify-content: space-between;
@@ -115,7 +126,6 @@ h1 {
 }
 
 .toggle-button {
-    display: none; /* 預設隱藏按鈕 */
     font-size: 1.5em;
     background: none;
     border: none;
@@ -124,7 +134,16 @@ h1 {
     padding: 5px;
 }
 
-/* 側邊欄展開/收合效果 */
+.toggle-button #toggle-icon {
+    display: inline-block;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.collapsed .toggle-button #toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* 響應式設計 */
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
@@ -132,34 +151,36 @@ h1 {
         height: auto;
         max-height: 100%;
         z-index: 1000;
-        transform: translateY(0);
         box-shadow: none;
+        padding: 10px;
     }
-
+    
     .sidebar.collapsed {
+        height: 60px; /* 摺疊後高度僅保留 header 的高度 */
         overflow-y: hidden;
-        /* 高度設為 header 的高度，以收合 */
-        height: 120px; 
     }
     
     .sidebar.expanded {
         height: 100%;
     }
+    
+    .sidebar.collapsed .header-content {
+        padding-right: 10px;
+    }
 
-    .sidebar main {
+    .sidebar h1 {
+        margin-bottom: 0;
+    }
+
+    .sidebar:not(.collapsed) .search-container,
+    .sidebar:not(.collapsed) main {
         display: block;
     }
 
     .toggle-button {
-        display: block; /* 在小螢幕上顯示按鈕 */
-    }
-
-    .toggle-button #toggle-icon {
-        display: inline-block;
-        transition: transform 0.3s ease-in-out;
-    }
-
-    .sidebar.expanded .toggle-button #toggle-icon {
-        transform: rotate(90deg);
+        position: absolute;
+        top: 15px;
+        right: 15px;
     }
 }
+
