@@ -12,12 +12,14 @@
 </head>
 <body>
     <div class="container">
-        <div id="sidebar" class="sidebar">
+        <div id="sidebar" class="sidebar collapsed">
             <header>
                 <div class="header-content">
                     <h1>臺灣植物地圖</h1>
-                    <!-- 側邊欄切換按鈕，僅在小螢幕上顯示 -->
-                    <button id="toggle-sidebar" class="toggle-button">☰</button>
+                    <!-- 側邊欄切換按鈕 -->
+                    <button id="toggle-sidebar" class="toggle-button">
+                        <span id="toggle-icon">▶</span>
+                    </button>
                 </div>
                 <div class="search-container">
                     <input type="text" id="search-input" placeholder="搜尋植物名或地名...">
