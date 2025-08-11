@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const searchInput = document.getElementById("search-input");
     const sidebar = document.getElementById("sidebar");
     const toggleButton = document.getElementById("toggle-sidebar");
+    const toggleIcon = document.getElementById("toggle-icon");
     plantListElement = document.getElementById("plant-list");
 
     // 🚩 初始化地圖
@@ -24,9 +25,24 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 🚩 綁定事件
     searchInput.addEventListener("keyup", filterData);
+    
+    // 側邊欄切換功能
     toggleButton.addEventListener("click", () => {
-        sidebar.classList.toggle("visible");
+        if (sidebar.classList.contains("collapsed")) {
+            sidebar.classList.remove("collapsed");
+            sidebar.classList.add("expanded");
+            toggleIcon.textContent = "▼";
+        } else {
+            sidebar.classList.remove("expanded");
+            sidebar.classList.add("collapsed");
+            toggleIcon.textContent = "▶";
+        }
     });
+
+    // 在大螢幕上，確保側邊欄是展開的
+    if (window.innerWidth > 768) {
+        sidebar.classList.remove("collapsed");
+    }
 });
 
 /**
@@ -34,7 +50,8 @@ document.addEventListener("DOMContentLoaded", function() {
  */
 async function loadPlantData() {
     try {
-        const response = await fetch('places_with_gps.json');
+        // 在 URL 後方加入時間戳，強制瀏覽器重新載入檔案，避免快取問題
+        const response = await fetch(`places_with_gps.json?t=${new Date().getTime()}`);
         allData = await response.json();
         
         if (!Array.isArray(allData) || allData.length === 0) {
@@ -81,6 +98,11 @@ function createMarker(item) {
     const lng = parseFloat(item.lng);
     const marker = L.marker([lat, lng]).addTo(map);
 
+    // 檢查 name 屬性，如果不存在則顯示警告
+    if (!item.name) {
+        console.warn(`⚠️ 點位名稱遺失，GPS 座標 [${lat}, ${lng}]。請檢查您的 places_with_gps.json。`);
+    }
+
     // 綁定 Popup
     marker.bindPopup(`
         <div class="popup-content">
@@ -103,6 +125,12 @@ function createMarker(item) {
 function createListItem(item) {
     const listItem = document.createElement('div');
     listItem.className = 'plant-item';
+
+    // 檢查 name 屬性，如果不存在則顯示警告
+    if (!item.name) {
+        console.warn(`⚠️ 清單名稱遺失，GPS 座標 [${item.lat}, ${item.lng}]。請檢查您的 places_with_gps.json。`);
+    }
+
     listItem.innerHTML = `
         <div class="plant-info">
             <h3>${item.name || '未命名'}</h3>
@@ -120,6 +148,12 @@ function createListItem(item) {
         );
         if (targetMarker) {
             targetMarker.openPopup();
+        }
+        // 在手機上點擊清單項目後，自動收合側邊欄
+        if (window.innerWidth <= 768) {
+            document.getElementById("sidebar").classList.remove("expanded");
+            document.getElementById("sidebar").classList.add("collapsed");
+            document.getElementById("toggle-icon").textContent = "▶";
         }
     });
 
