@@ -7,6 +7,8 @@ let allData = [];
 document.addEventListener("DOMContentLoaded", function() {
     // 取得 HTML 元素
     const searchInput = document.getElementById("search-input");
+    const sidebar = document.getElementById("sidebar");
+    const toggleButton = document.getElementById("toggle-sidebar");
     plantListElement = document.getElementById("plant-list");
 
     // 🚩 初始化地圖
@@ -19,12 +21,15 @@ document.addEventListener("DOMContentLoaded", function() {
     // 🚩 載入 JSON 資料
     loadPlantData();
 
-    // 🚩 綁定搜尋事件
+    // 🚩 綁定事件
     searchInput.addEventListener("keyup", filterData);
+    toggleButton.addEventListener("click", () => {
+        sidebar.classList.toggle("visible");
+    });
 });
 
 /**
- * 載入 JSON 檔案並建立標記、清單和篩選選項
+ * 載入 JSON 檔案並建立標記、清單
  */
 async function loadPlantData() {
     try {
@@ -38,39 +43,12 @@ async function loadPlantData() {
 
         console.log(`✅ 成功載入 ${allData.length} 筆植物地點資料。`);
         
-        // 自動生成篩選選項
-        generateFilters(allData);
-
         // 首次載入所有資料
         renderData(allData);
 
     } catch (error) {
         console.error('❌ 載入 places_with_gps.json 失敗:', error);
     }
-}
-
-/**
- * 根據所有資料動態生成篩選 checkbox
- * @param {Array} data - 原始地點資料陣列
- */
-function generateFilters(data) {
-    const filterContainer = document.getElementById('filter-container');
-    const uniquePlants = [...new Set(data.map(item => item.plant))].sort();
-
-    filterContainer.innerHTML = ''; // 清除舊的篩選選項
-    uniquePlants.forEach(plant => {
-        const label = document.createElement('label');
-        label.className = 'filter-option';
-        label.innerHTML = `
-            <input type="checkbox" class="plant-filter" value="${plant}"> ${plant}
-        `;
-        filterContainer.appendChild(label);
-    });
-
-    // 綁定篩選事件
-    filterContainer.querySelectorAll(".plant-filter").forEach(input => {
-        input.addEventListener("change", filterData);
-    });
 }
 
 /**
@@ -103,9 +81,9 @@ function createMarker(item) {
     // 綁定 Popup
     marker.bindPopup(`
         <div class="popup-content">
-            <h3 class="popup-title">${item.name}</h3>
-            <p><strong>植物名:</strong> ${item.plant}</p>
-            <p><strong>地址:</strong> ${item.address}</p>
+            <h3 class="popup-title">${item.name || '未命名'}</h3>
+            <p><strong>植物名:</strong> ${item.plant || '無'}</p>
+            <p><strong>地址:</strong> ${item.address || '無'}</p>
             <p><strong>GPS:</strong> ${lat.toFixed(5)}, ${lng.toFixed(5)}</p>
         </div>
     `);
@@ -124,9 +102,9 @@ function createListItem(item) {
     listItem.className = 'plant-item';
     listItem.innerHTML = `
         <div class="plant-info">
-            <h3>${item.name}</h3>
-            <p>植物名: ${item.plant}</p>
-            <p>地址: ${item.address}</p>
+            <h3>${item.name || '未命名'}</h3>
+            <p>植物名: ${item.plant || '無'}</p>
+            <p>地址: ${item.address || '無'}</p>
         </div>
     `;
 
@@ -146,23 +124,18 @@ function createListItem(item) {
 }
 
 /**
- * 根據搜尋和篩選條件過濾資料並重新渲染
+ * 根據搜尋條件過濾資料並重新渲染
  */
 function filterData() {
     const searchText = document.getElementById("search-input").value.toLowerCase();
-    const selectedPlants = Array.from(document.querySelectorAll(".plant-filter:checked"))
-                               .map(input => input.value);
     
     const filteredData = allData.filter(item => {
-        // 檢查搜尋條件
-        const matchesSearch = item.name.toLowerCase().includes(searchText) ||
-                              item.plant.toLowerCase().includes(searchText) ||
-                              item.address.toLowerCase().includes(searchText);
+        // 檢查搜尋條件，並加上 null 或 undefined 檢查
+        const name = item.name ? item.name.toLowerCase() : '';
+        const plant = item.plant ? item.plant.toLowerCase() : '';
+        const address = item.address ? item.address.toLowerCase() : '';
 
-        // 檢查篩選條件
-        const matchesFilter = selectedPlants.length === 0 || selectedPlants.includes(item.plant);
-
-        return matchesSearch && matchesFilter;
+        return name.includes(searchText) || plant.includes(searchText) || address.includes(searchText);
     });
 
     renderData(filteredData);
