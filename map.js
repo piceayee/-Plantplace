@@ -26,7 +26,24 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // 側邊欄切換功能
     toggleButton.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
+        if (window.innerWidth <= 768) {
+            // 手機版使用完全滑入/滑出
+            sidebar.classList.toggle("expanded");
+            sidebar.classList.toggle("collapsed");
+        } else {
+            // 桌面版使用寬度收合
+            sidebar.classList.toggle("collapsed");
+        }
+    });
+
+    // 視窗大小改變時，調整側邊欄狀態
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove("expanded", "collapsed");
+        } else {
+            sidebar.classList.add("collapsed");
+            sidebar.classList.remove("expanded");
+        }
     });
 });
 
@@ -67,10 +84,6 @@ function renderData(data) {
 
     data.forEach(item => {
         if (item.lat && item.lng) {
-            // 檢查 name 屬性，如果不存在則印出整個物件以便除錯
-            if (!item.name) {
-                console.warn('⚠️ 點位名稱遺失。此筆資料為:', item);
-            }
             createMarker(item);
             createListItem(item);
         }
@@ -89,7 +102,8 @@ function createMarker(item) {
     // 綁定 Popup
     marker.bindPopup(`
         <div class="popup-content">
-            <p class="popup-title">${item.name || '未名'}</p>
+            <p class="popup-title">${item.plant || '未名R'}</p>
+            <p><strong>植物名:</strong> ${item.name || '無R'}</p>
             <p><strong>植物名:</strong> ${item.plant || '無'}</p>
             <p><strong>地址:</strong> ${item.address || '無'}</p>
             <p><strong>GPS:</strong> ${lat.toFixed(5)}, ${lng.toFixed(5)}</p>
@@ -109,9 +123,15 @@ function createListItem(item) {
     const listItem = document.createElement('div');
     listItem.className = 'plant-item';
 
+    // 這裡我將印出完整的 item 物件，幫助您檢查 name 是否存在或為空
+    if (!item.name) {
+        console.warn('⚠️ 發現一筆名稱遺失的資料。此資料物件為:', item);
+    }
+
     listItem.innerHTML = `
         <div class="plant-info">
             <h3>${item.name || '未名'}</h3>
+            <p>植物名: ${item.name || '無'}</p>
             <p>植物名: ${item.plant || '無'}</p>
             <p>地址: ${item.address || '無'}</p>
         </div>
@@ -130,7 +150,8 @@ function createListItem(item) {
         // 在手機上點擊清單項目後，自動收合側邊欄
         if (window.innerWidth <= 768) {
             const sidebar = document.getElementById("sidebar");
-            if (!sidebar.classList.contains("collapsed")) {
+            if (sidebar.classList.contains("expanded")) {
+                sidebar.classList.remove("expanded");
                 sidebar.classList.add("collapsed");
             }
         }
@@ -147,11 +168,11 @@ function filterData() {
     
     const filteredData = allData.filter(item => {
         // 檢查搜尋條件，並加上 null 或 undefined 檢查
-        const name = item.name ? item.name.toLowerCase() : '';
+        const namer = item.name ? item.name.toLowerCase() : '';
         const plant = item.plant ? item.plant.toLowerCase() : '';
         const address = item.address ? item.address.toLowerCase() : '';
 
-        return name.includes(searchText) || plant.includes(searchText) || address.includes(searchText);
+        return namer.includes(searchText) || plant.includes(searchText) || address.includes(searchText);
     });
 
     renderData(filteredData);
