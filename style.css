@@ -28,26 +28,32 @@ body, html {
 
 /* 側邊欄樣式 */
 .sidebar {
+    position: relative;
     width: 350px;
-    min-width: 280px; /* 最小寬度 */
     background-color: var(--background-color);
     box-shadow: 2px 0 5px var(--shadow-color);
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
-    overflow-y: auto;
+    transition: width 0.3s ease-in-out;
 }
 
 .sidebar.collapsed {
-    width: 60px; /* 收合時的寬度 */
+    width: 0;
     overflow: hidden;
+    padding: 0;
 }
 
-.sidebar.collapsed h1,
-.sidebar.collapsed .search-container,
-.sidebar.collapsed main {
+.sidebar.collapsed #sidebar-content {
     display: none;
+}
+
+#sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    overflow-y: auto;
 }
 
 h1 {
@@ -119,19 +125,26 @@ h1 {
 }
 
 /* 側邊欄切換按鈕樣式 */
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .toggle-button {
+    position: fixed; /* 修正：使用 fixed 定位 */
+    top: 50%;
+    left: 350px; /* 修正：預設位置為側邊欄寬度 */
+    transform: translateY(-50%);
     font-size: 1.5em;
-    background: none;
+    background-color: var(--primary-color);
+    color: white;
     border: none;
     cursor: pointer;
-    color: var(--primary-color);
     padding: 5px;
+    width: 30px;
+    height: 40px;
+    border-radius: 0 5px 5px 0;
+    transition: left 0.3s ease-in-out;
+    z-index: 1001;
+}
+
+.sidebar.collapsed .toggle-button {
+    left: 0; /* 修正：收合時，按鈕位置為 0 */
 }
 
 .toggle-button #toggle-icon {
@@ -147,40 +160,37 @@ h1 {
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
+        max-width: none;
         position: absolute;
-        height: auto;
-        max-height: 100%;
-        z-index: 1000;
-        box-shadow: none;
-        padding: 10px;
+        height: 100%;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
     }
     
     .sidebar.collapsed {
-        height: 60px; /* 摺疊後高度僅保留 header 的高度 */
-        overflow-y: hidden;
+        width: 0;
+        transform: translateX(0);
     }
-    
+
     .sidebar.expanded {
-        height: 100%;
+        transform: translateX(0);
     }
     
-    .sidebar.collapsed .header-content {
-        padding-right: 10px;
-    }
-
-    .sidebar h1 {
-        margin-bottom: 0;
-    }
-
-    .sidebar:not(.collapsed) .search-container,
-    .sidebar:not(.collapsed) main {
-        display: block;
-    }
-
     .toggle-button {
-        position: absolute;
-        top: 15px;
-        right: 15px;
+        position: fixed;
+        top: 50%;
+        left: 0;
+        right: auto;
+        z-index: 1001;
+    }
+
+    .sidebar.expanded .toggle-button {
+        left: auto;
+        right: -20px;
+        z-index: 1002;
+    }
+    
+    .sidebar.expanded .toggle-button #toggle-icon {
+        transform: rotate(180deg);
     }
 }
-
