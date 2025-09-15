@@ -13,23 +13,22 @@
 <body>
     <div class="container">
         <div id="sidebar" class="sidebar">
-            <header>
-                <div class="header-content">
+            <button id="toggle-sidebar" class="toggle-button">
+                <span id="toggle-icon">▶</span>
+            </button>
+            <div id="sidebar-content">
+                <header>
                     <h1>臺灣植物地圖</h1>
-                    <!-- 側邊欄切換按鈕 -->
-                    <button id="toggle-sidebar" class="toggle-button">
-                        <span id="toggle-icon">▶</span>
-                    </button>
-                </div>
-                <div class="search-container">
-                    <input type="text" id="search-input" placeholder="搜尋植物名或地名...">
-                </div>
-            </header>
-            <main>
-                <div id="plant-list">
-                    <!-- 植物列表將由 JavaScript 動態生成 -->
-                </div>
-            </main>
+                    <div class="search-container">
+                        <input type="text" id="search-input" placeholder="搜尋植物名或地名...">
+                    </div>
+                </header>
+                <main>
+                    <div id="plant-list">
+                        <!-- 植物列表將由 JavaScript 動態生成 -->
+                    </div>
+                </main>
+            </div>
         </div>
         <div id="map"></div>
     </div>
