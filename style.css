@@ -21,6 +21,7 @@ body, html {
     overflow: hidden;
 }
 
+/* 確保容器充滿整個視窗 */
 .container {
     position: relative;
     height: 100vh;
@@ -29,7 +30,8 @@ body, html {
 
 /* 側邊欄樣式 */
 .sidebar {
-    position: absolute;
+    /* 關鍵修正：使用絕對定位，讓地圖獨立於側邊欄寬度變化 */
+    position: absolute; 
     top: 0;
     left: 0;
     height: 100%;
@@ -42,6 +44,7 @@ body, html {
     z-index: 1000;
 }
 
+/* 側邊欄收合時，寬度歸零並隱藏內容 */
 .sidebar.collapsed {
     width: 0;
     overflow: hidden;
@@ -110,6 +113,7 @@ h1 {
 
 /* 地圖樣式 */
 #map {
+    /* 關鍵修正：地圖絕對定位並填滿容器，確保它不因側邊欄寬度而移動 */
     position: absolute;
     top: 0;
     left: 0;
@@ -143,7 +147,7 @@ h1 {
 .toggle-button {
     position: fixed;
     top: 50%;
-    left: 350px;
+    left: 350px; /* 桌面版在側邊欄邊緣 */
     transform: translateY(-50%);
     font-size: 1.5em;
     background-color: var(--primary-color);
@@ -159,7 +163,7 @@ h1 {
 }
 
 .sidebar.collapsed .toggle-button {
-    left: 0;
+    left: 0; /* 收合時移動到最左側 */
 }
 
 .toggle-button #toggle-icon {
@@ -174,6 +178,8 @@ h1 {
 /* 縣市篩選器樣式 */
 .city-filters {
     margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .filter-button-container {
@@ -186,7 +192,7 @@ h1 {
 }
 
 .filter-button-container.expanded {
-    max-height: 500px; /* 根據內容調整，足夠顯示所有按鈕 */
+    max-height: 500px;
     transition: max-height 0.5s ease-in;
 }
 
@@ -219,32 +225,35 @@ h1 {
     .sidebar {
         width: 100%;
         max-width: none;
-        position: absolute;
+        position: fixed; /* 使用 fixed 確保它在滾動時仍在原位 */
         height: 100%;
         transform: translateX(-100%);
         transition: transform 0.3s ease-in-out;
     }
     
+    /* 關鍵修正：在手機上，sidebar初始就應該是 collapsed */
     .sidebar.collapsed {
-        width: 0;
-        transform: translateX(0);
+        width: 100%; /* 雖然隱藏了，但為了讓toggle button移到左側，寬度設為100% */
+        transform: translateX(-100%); /* 隱藏到左側 */
+        overflow: hidden;
+        padding: 0;
     }
 
     .sidebar.expanded {
-        transform: translateX(0);
+        transform: translateX(0); /* 展開時顯示 */
     }
     
     .toggle-button {
         position: fixed;
         top: 50%;
-        left: 0;
+        left: 0; /* 手機版固定在最左側 */
         right: auto;
         z-index: 1001;
     }
 
     .sidebar.expanded .toggle-button {
         left: auto;
-        right: -20px;
+        right: -20px; /* 展開時將按鈕移到側邊欄之外 */
         z-index: 1002;
     }
     
