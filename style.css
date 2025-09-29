@@ -22,19 +22,24 @@ body, html {
 }
 
 .container {
-    display: flex;
+    position: relative;
     height: 100vh;
+    width: 100vw;
 }
 
 /* 側邊欄樣式 */
 .sidebar {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
     width: 350px;
     background-color: var(--background-color);
     box-shadow: 2px 0 5px var(--shadow-color);
     display: flex;
     flex-direction: column;
     transition: width 0.3s ease-in-out;
+    z-index: 1000;
 }
 
 .sidebar.collapsed {
@@ -105,8 +110,12 @@ h1 {
 
 /* 地圖樣式 */
 #map {
-    flex-grow: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
+    z-index: 1;
 }
 
 .leaflet-popup-content-wrapper {
@@ -124,11 +133,17 @@ h1 {
     margin-bottom: 5px;
 }
 
+.popup-content a {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 /* 側邊欄切換按鈕樣式 */
 .toggle-button {
-    position: fixed; /* 修正：使用 fixed 定位 */
+    position: fixed;
     top: 50%;
-    left: 350px; /* 修正：預設位置為側邊欄寬度 */
+    left: 350px;
     transform: translateY(-50%);
     font-size: 1.5em;
     background-color: var(--primary-color);
@@ -144,7 +159,7 @@ h1 {
 }
 
 .sidebar.collapsed .toggle-button {
-    left: 0; /* 修正：收合時，按鈕位置為 0 */
+    left: 0;
 }
 
 .toggle-button #toggle-icon {
@@ -154,6 +169,49 @@ h1 {
 
 .sidebar.collapsed .toggle-button #toggle-icon {
     transform: rotate(180deg);
+}
+
+/* 縣市篩選器樣式 */
+.city-filters {
+    margin-bottom: 15px;
+}
+
+.filter-button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.filter-button-container.expanded {
+    max-height: 500px; /* 根據內容調整，足夠顯示所有按鈕 */
+    transition: max-height 0.5s ease-in;
+}
+
+.filter-button {
+    background-color: #ddd;
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.filter-button.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 8px;
+    font-weight: bold;
 }
 
 /* 響應式設計 */
