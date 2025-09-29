@@ -2,7 +2,6 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <!-- 確保手機版正常顯示的關鍵 meta tag -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>臺灣植物地圖</title>
     <!-- 引入 Leaflet 地圖 library -->
@@ -17,10 +16,8 @@
 </head>
 <body>
     <div class="container">
+        <!-- 側邊欄，不再包含切換按鈕 -->
         <div id="sidebar" class="sidebar">
-            <button id="toggle-sidebar" class="toggle-button">
-                <span id="toggle-icon">▶</span>
-            </button>
             <div id="sidebar-content">
                 <header>
                     <h1 id="map-title" style="cursor:pointer;">臺灣植物地圖</h1>
@@ -38,6 +35,12 @@
                 </main>
             </div>
         </div>
+        
+        <!-- 切換按鈕現在是側邊欄的兄弟元素 -->
+        <button id="toggle-sidebar" class="toggle-button">
+            <span id="toggle-icon">▶</span>
+        </button>
+        
         <div id="map"></div>
     </div>
     <!-- 引入我們的 JavaScript 檔案 -->
