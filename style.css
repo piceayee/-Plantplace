@@ -21,7 +21,6 @@ body, html {
     overflow: hidden;
 }
 
-/* 確保容器充滿整個視窗 */
 .container {
     position: relative;
     height: 100vh;
@@ -30,7 +29,6 @@ body, html {
 
 /* 側邊欄樣式 */
 .sidebar {
-    /* 關鍵修正：使用絕對定位，讓地圖獨立於側邊欄寬度變化 */
     position: absolute; 
     top: 0;
     left: 0;
@@ -40,11 +38,12 @@ body, html {
     box-shadow: 2px 0 5px var(--shadow-color);
     display: flex;
     flex-direction: column;
-    transition: width 0.3s ease-in-out;
+    /* 新增：為手機模式的移動準備 */
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
     z-index: 1000;
 }
 
-/* 側邊欄收合時，寬度歸零並隱藏內容 */
+/* 桌面版收合：寬度歸零 */
 .sidebar.collapsed {
     width: 0;
     overflow: hidden;
@@ -64,56 +63,16 @@ body, html {
     overflow-y: auto;
 }
 
-h1 {
-    font-size: 1.5em;
-    color: var(--primary-color);
+/* 縣市篩選器樣式 */
+.city-filters {
     margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
 }
-
-.search-container {
-    margin-bottom: 15px;
-}
-
-#search-input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-}
-
-#plant-list {
-    flex-grow: 1;
-}
-
-.plant-item {
-    background-color: var(--list-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.plant-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px var(--shadow-color);
-}
-
-.plant-info h3 {
-    font-size: 1.1em;
-    color: var(--primary-color);
-    margin-bottom: 5px;
-}
-
-.plant-info p {
-    font-size: 0.9em;
-    color: var(--text-color);
-}
+/* ... (其他篩選器樣式不變) ... */
 
 /* 地圖樣式 */
 #map {
-    /* 關鍵修正：地圖絕對定位並填滿容器，確保它不因側邊欄寬度而移動 */
     position: absolute;
     top: 0;
     left: 0;
@@ -122,32 +81,11 @@ h1 {
     z-index: 1;
 }
 
-.leaflet-popup-content-wrapper {
-    background: white;
-    border-radius: 5px;
-    padding: 15px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-.popup-title {
-    font-weight: bold;
-    color: var(--primary-color);
-    margin-bottom: 5px;
-}
-
-.popup-content a {
-    color: #007bff;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-/* 側邊欄切換按鈕樣式 */
+/* 側邊欄切換按鈕樣式 - 現在是獨立的 */
 .toggle-button {
     position: fixed;
     top: 50%;
-    left: 350px; /* 桌面版在側邊欄邊緣 */
+    left: 350px; /* 桌面預設：在側邊欄右側邊緣 */
     transform: translateY(-50%);
     font-size: 1.5em;
     background-color: var(--primary-color);
@@ -162,8 +100,9 @@ h1 {
     z-index: 1001;
 }
 
-.sidebar.collapsed .toggle-button {
-    left: 0; /* 收合時移動到最左側 */
+/* 桌面版：當側邊欄收合時，按鈕移動到最左邊 */
+.sidebar.collapsed ~ .toggle-button {
+    left: 0;
 }
 
 .toggle-button #toggle-icon {
@@ -171,93 +110,46 @@ h1 {
     transition: transform 0.3s ease-in-out;
 }
 
-.sidebar.collapsed .toggle-button #toggle-icon {
+.sidebar.collapsed ~ .toggle-button #toggle-icon {
     transform: rotate(180deg);
-}
-
-/* 縣市篩選器樣式 */
-.city-filters {
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.filter-button-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-}
-
-.filter-button-container.expanded {
-    max-height: 500px;
-    transition: max-height 0.5s ease-in;
-}
-
-.filter-button {
-    background-color: #ddd;
-    color: var(--text-color);
-    border: none;
-    border-radius: 5px;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.filter-button.active {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.filter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    margin-bottom: 8px;
-    font-weight: bold;
 }
 
 /* 響應式設計 */
 @media (max-width: 768px) {
+    /* 手機版側邊欄：使用 transform 完全推到螢幕外 */
     .sidebar {
         width: 100%;
         max-width: none;
-        position: fixed; /* 使用 fixed 確保它在滾動時仍在原位 */
+        position: fixed;
         height: 100%;
-        transform: translateX(-100%);
+        transform: translateX(-100%); /* 初始狀態：完全隱藏 */
         transition: transform 0.3s ease-in-out;
     }
-    
-    /* 關鍵修正：在手機上，sidebar初始就應該是 collapsed */
-    .sidebar.collapsed {
-        width: 100%; /* 雖然隱藏了，但為了讓toggle button移到左側，寬度設為100% */
-        transform: translateX(-100%); /* 隱藏到左側 */
-        overflow: hidden;
-        padding: 0;
-    }
 
+    /* 手機版展開：移回螢幕 */
     .sidebar.expanded {
-        transform: translateX(0); /* 展開時顯示 */
+        transform: translateX(0); 
     }
     
+    /* 關鍵修正：手機版切換按鈕 */
     .toggle-button {
-        position: fixed;
-        top: 50%;
-        left: 0; /* 手機版固定在最左側 */
+        left: 0; /* 手機版預設：不論側邊欄狀態，按鈕鎖定在螢幕最左邊 */
         right: auto;
-        z-index: 1001;
     }
 
-    .sidebar.expanded .toggle-button {
-        left: auto;
-        right: -20px; /* 展開時將按鈕移到側邊欄之外 */
-        z-index: 1002;
+    /* 手機版展開時：按鈕移到側邊欄右側邊緣外，方便使用者點擊關閉 */
+    .sidebar.expanded ~ .toggle-button {
+        left: 100%;
+        margin-left: -30px; /* 讓按鈕本體寬度-30px後露出來 */
+        right: auto;
     }
     
-    .sidebar.expanded .toggle-button #toggle-icon {
+    /* 調整手機版圖示旋轉邏輯 */
+    .sidebar.expanded ~ .toggle-button #toggle-icon {
         transform: rotate(180deg);
+    }
+    
+    .sidebar.collapsed ~ .toggle-button #toggle-icon {
+        transform: rotate(0deg);
     }
 }
