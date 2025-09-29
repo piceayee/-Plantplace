@@ -19,17 +19,16 @@ document.addEventListener("DOMContentLoaded", function() {
     // 🚩 初始化地圖
     const initialView = { center: [23.5, 121], zoom: 8 };
     map = L.map("map", {
-        zoomControl: true, // 顯示縮放控制
-        // 新增：平滑縮放相關設定
+        zoomControl: true,
         zoomAnimation: true,
         fadeAnimation: true,
         markerZoomAnimation: true,
     }).setView(initialView.center, initialView.zoom);
 
-    // 新增：更換為效能較佳的圖磚服務 (CartoDB Positron)
+    // 新增：使用效能較佳的圖磚服務 (CartoDB Positron)
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png", {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        noWrap: true // 防止地圖重複
+        noWrap: true
     }).addTo(map);
 
     // 初始化標記聚集圖層
@@ -50,8 +49,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // 初始檢查：確保手機版側邊欄初始就收合
     function checkInitialMobileState() {
         if (window.innerWidth <= 768) {
-            // 確保手機載入時，側邊欄處於收合狀態，但按鈕可見
+            // 確保手機載入時，側邊欄處於收合狀態
             sidebar.classList.add("collapsed");
+            sidebar.classList.remove("expanded");
         }
     }
     checkInitialMobileState();
@@ -61,9 +61,10 @@ document.addEventListener("DOMContentLoaded", function() {
         if (window.innerWidth <= 768) {
             // 手機版：切換 expanded/collapsed
             sidebar.classList.toggle("expanded");
-            sidebar.classList.toggle("collapsed");
+            // 注意：手機版不需要切換 'collapsed'，因為 'expanded' 負責顯示，
+            // 預設 CSS 負責隱藏 (transform: translateX(-100%))
         } else {
-            // 桌面版：切換 collapsed
+            // 桌面版：切換 collapsed (負責寬度切換)
             sidebar.classList.toggle("collapsed");
         }
         // 觸發地圖大小調整，確保地圖渲染正確，避免收合/展開後出現灰色區域
@@ -75,12 +76,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // 視窗大小改變時，調整側邊欄狀態
     window.addEventListener('resize', () => {
         if (window.innerWidth > 768) {
-            // 桌面版時移除手機特有的 expanded/collapsed 類別
-            sidebar.classList.remove("expanded", "collapsed");
+            // 桌面版時移除手機特有的 expanded 類別，並確保 collapsed 狀態正確
+            sidebar.classList.remove("expanded");
+            // 如果原本是隱藏的，就讓它維持 collapsed (桌面寬度變 0)
         } else {
-            // 轉到手機版時，確保其為 collapsed 狀態
+            // 轉到手機版時，如果它不是展開狀態，就視為隱藏 (collapsed 樣式)
             if (!sidebar.classList.contains("expanded")) {
-                 sidebar.classList.add("collapsed");
+                sidebar.classList.add("collapsed");
             }
         }
          // 確保地圖在調整大小後重新渲染
@@ -128,7 +130,7 @@ async function loadPlantData() {
 function getCityFromAddress(address) {
     if (!address) return '其他';
     // 涵蓋所有縣市名稱
-    const cityMatch = address.match(/^(臺北市|新北市|桃園市|臺中市|臺南市|高雄市|基隆市|新竹市|嘉義市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義縣|屏東縣|宜蘭縣|花蓮縣|臺東縣|澎湖縣|金門縣|連江縣|臺(中|南|北)縣|高雄縣|臺(東)縣)/); // 包含過去的縣名
+    const cityMatch = address.match(/^(臺北市|新北市|桃園市|臺中市|臺南市|高雄市|基隆市|新竹市|嘉義市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義縣|屏東縣|宜蘭縣|花蓮縣|臺東縣|澎湖縣|金門縣|連江縣|臺(中|南|北)縣|高雄縣|臺(東)縣)/);
     return cityMatch ? cityMatch[0] : '其他';
 }
 
@@ -286,7 +288,7 @@ function createListItem(item) {
             const sidebar = document.getElementById("sidebar");
             if (sidebar.classList.contains("expanded")) {
                 sidebar.classList.remove("expanded");
-                sidebar.classList.add("collapsed");
+                // 由於按鈕獨立，這裡不需要切換 collapsed 類別，CSS 的 transform 會處理隱藏
             }
         }
     });
