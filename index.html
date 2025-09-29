@@ -7,6 +7,10 @@
     <!-- 引入 Leaflet 地圖 library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <!-- 引入 Leaflet.markercluster 的 CSS 和 JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
     <!-- 引入我們的 CSS 檔案 -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -18,12 +22,15 @@
             </button>
             <div id="sidebar-content">
                 <header>
-                    <h1>臺灣植物地圖</h1>
+                    <h1 id="map-title" style="cursor:pointer;">臺灣植物地圖</h1>
                     <div class="search-container">
                         <input type="text" id="search-input" placeholder="搜尋植物名或地名...">
                     </div>
                 </header>
                 <main>
+                    <div id="city-filters" class="city-filters">
+                        <!-- 縣市篩選器將由 JavaScript 動態生成 -->
+                    </div>
                     <div id="plant-list">
                         <!-- 植物列表將由 JavaScript 動態生成 -->
                     </div>
